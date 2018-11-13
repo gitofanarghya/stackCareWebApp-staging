@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -6,7 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import { Loading } from './Loading'
-import { Grid } from '@material-ui/core';
+import { Grid, Divider } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -32,6 +32,7 @@ const styles = theme => ({
     flexGrow: 1,
     width: '100%',
     backgroundColor: theme.palette.background.paper,
+    overflow: 'auto'
   },
   scroll: {
     maxWidth: 20
@@ -39,6 +40,14 @@ const styles = theme => ({
   tabRoot: {
     textTransform: "initial",
     minWidth: 50,
+  },
+  zone: {
+    padding: '10px',
+    textShadow: '1px 1px 5px #00000094',
+    boxShadow: '0 0 1px black'
+  },
+  zoneHeading: {
+      padding: '10px'
   }
 });
 
@@ -79,28 +88,30 @@ class DeviceList extends React.Component {
   render() {
     const { classes } = this.props;
     const { value } = this.state;
-
+    console.log(this.props)
     return (
-        !this.props.loadedCurrentZone ? <Loading /> : 
+        this.props.loadedCurrentZone ? <Loading /> : 
         <div className={classes.root}>
-            <AppBar position="static" color="default">
-              <Tabs
-                value={value}
-                onChange={this.handleChange}
-                indicatorColor="secondary"
-                textColor="primary"
-                scrollable
-                scrollButtons="auto"
-                classes={{scrollButtons: classes.scroll}} 
-              >
-                {this.props.zones.map(n => <Tab classes={{ root: classes.tabRoot}} key={n.id} onClick={() => this.props.setCurrentZone(n.id)} label={<Typography variant="subheading">{n.name}</Typography>} />)}
-              </Tabs>
-            </AppBar>
-            <TabContainer>
-                {
-                    !this.props.loadedCurrentZone ? <Loading /> : <Zone currentZone={this.props.currentZone} setDevice={this.setDevice}/>
-                }
-            </TabContainer>
+            {this.props.zones.map(z => {
+                return (
+                    <div key={z.id} className={classes.zone}>
+                        <Grid container className={classes.zoneHeading} direction="row" justify="flex-start">
+                            <Typography variant="title" padding={8}>{z.name}</Typography>
+                        </Grid>
+                        {this.props.bulbs.filter(b => b.zone_id === z.id).length === 0 &&
+                        this.props.sensors.filter(s => s.zone_id === z.id).length === 0 && 
+                        this.props.switches.filter(sw => sw.zone_id === z.id).length === 0 ? 
+                            <Typography variant="body2">No devices</Typography> : 
+                            <Grid container className="flex" alignItems="stretch" direction="row" justify="flex-start">
+                                {this.props.bulbs.filter(b => b.zone_id === z.id).map( bulb => <Grid key={bulb.id} onClick={() => this.setDevice(bulb) }> <Bulbicon /> </Grid> )}
+                                {this.props.sensors.filter(s => s.zone_id === z.id).map( sensor => <Grid key={sensor.id} onClick={() => this.setDevice(sensor) }> <Sensoricon /> </Grid> )}
+                                {this.props.switches.filter(sw => sw.zone_id === z.id).map( swtch => <Grid key={swtch.id} onClick={() => this.setDevice(swtch) }> <Switchicon /> </Grid> )}                       
+                            </Grid>
+                        }
+                    </div> 
+                    )
+                })
+            }
             {this.state.open ?
             <div>
                 <Dialog
@@ -206,3 +217,23 @@ DeviceList.propTypes = {
 
 const DeviceListWithStyles = withStyles(styles)(DeviceList);
 export {DeviceListWithStyles as DeviceList}
+
+
+/*<AppBar position="static" color="default">
+              <Tabs
+                value={value}
+                onChange={this.handleChange}
+                indicatorColor="secondary"
+                textColor="primary"
+                scrollable
+                scrollButtons="auto"
+                classes={{scrollButtons: classes.scroll}} 
+              >
+                {this.props.zones.map(n => <Tab classes={{ root: classes.tabRoot}} key={n.id} onClick={() => this.props.setCurrentZone(n.id)} label={<Typography variant="subheading">{n.name}</Typography>} />)}
+              </Tabs>
+            </AppBar>
+            <TabContainer>
+                {
+                    !this.props.loadedCurrentZone ? <Loading /> : <Zone currentZone={this.props.currentZone} setDevice={this.setDevice}/>
+                }
+            </TabContainer>*/

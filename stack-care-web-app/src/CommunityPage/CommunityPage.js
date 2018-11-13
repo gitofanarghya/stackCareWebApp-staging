@@ -66,7 +66,7 @@ class CommunityPage extends React.Component {
                                     </Grid>
                                     <Grid item sm={6} className={classNames("flex", "padded")}>
                                         {
-                                            !this.props.selectedUnitId ? <Placeholder /> : <DeviceList setCurrentZone={this.props.setCurrentZone} loadedCurrentZone={this.props.loadedCurrentZone} currentZone={this.props.currentZone} zones={this.props.zones.filter(z => z.site_id === this.props.selectedUnitId)} unit={this.props.allUnits[this.props.selectedCommunityId].find(u => u.id === this.props.selectedUnitId)}/>
+                                            !this.props.selectedUnitId ? <Placeholder /> : <DeviceList setCurrentZone={this.props.setCurrentZone} loadedCurrentZone={this.props.loadedCurrentZone} currentZone={this.props.currentZone} zones={this.props.zones.filter(z => z.site_id === this.props.selectedUnitId)} bulbs={this.props.bulbs.filter(b => b.site_id === this.props.selectedUnitId)} switches={this.props.switches.filter(sw => sw.site_id === this.props.selectedUnitId)} sensors={this.props.sensors.filter(s => s.site_id === this.props.selectedUnitId)} unit={this.props.allUnits[this.props.selectedCommunityId].find(u => u.id === this.props.selectedUnitId)}/>
                                         }
                                     </Grid>
                                 </Grid>
